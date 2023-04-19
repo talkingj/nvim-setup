@@ -87,7 +87,7 @@ end
 require('lualine').setup {
   options = {
     icons_enabled = false,
-    theme = 'OceanicNext',
+    theme = 'catppuccin',
     component_separators = { left = '', right = ''},
     section_separators = { left = '', right = ''},
     disabled_filetypes = {},
@@ -108,6 +108,21 @@ require('lualine').setup {
     lualine_c = {'filename'},
     lualine_x = {'location'},
  },	
+   tabline = {
+  	lualine_a = {{
+   	'buffers',
+  	mode=2,
+  	symbols = {
+    	modified =  ' +',
+    	alternative_file = '',
+    	directory = ' +-',
+  	}}},
+  lualine_b = {},
+  lualine_c = {},
+  lualine_x = {},
+  lualine_y = {},
+  lualine_z = {'tabs'}
+  },
  extensions = {}
  }
 
