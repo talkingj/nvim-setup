@@ -15,6 +15,10 @@ require('packer').startup(function()
 	branch = 'coq'
   }
   use {
+  'nvim-telescope/telescope.nvim', tag = '0.1.1',
+  requires = { {'nvim-lua/plenary.nvim'} }
+  }
+  use {
 	'ms-jpq/coq.artifacts',
 	branch = 'artifacts'
   }
@@ -23,6 +27,9 @@ require('packer').startup(function()
         run = ':TSUpdate'
     }
   use 'nvim-treesitter/playground'
+  use 'nvim-telescope/telescope.nvim'
+  use "nvim-lua/plenary.nvim"
+  use { "catppuccin/nvim", as = "catppuccin" }
 end)
 
 local g = vim.g
@@ -40,12 +47,10 @@ vim.wo.relativenumber = true;
 
 vim.api.nvim_set_keymap('n', '<Space>z','Zg', { noremap = false, silent = true });
 --vim.api.nvim_set_keymap('n', '<Space>p',':bn<CR>', { noremap = true, silent = true });
---cmd("colorscheme OceanicNext")
 cmd("set nospell");
 
 local nvim_lsp = require('lspconfig')
 local on_attach = function(client, bufnr)
-  --require('completion').on_attach()
 
   local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
   local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end  
@@ -102,30 +107,13 @@ require('lualine').setup {
     lualine_b = {},
     lualine_c = {'filename'},
     lualine_x = {'location'},
-    lualine_y = {},
-    lualine_z = {}
-  },
-  tabline = {
-  	lualine_a = {{
-   	'buffers',
-  	mode=2,
-  	symbols = {
-    	modified =  ' +',
-    	alternative_file = '',
-    	directory = ' +-',
-  	}}},
-  lualine_b = {},
-  lualine_c = {},
-  lualine_x = {},
-  lualine_y = {},
-  lualine_z = {'tabs'}
-  },
-  extensions = {}
-}
+ },	
+ extensions = {}
+ }
 
 require'nvim-treesitter.configs'.setup {
   -- A list of parser names, or "all"
-  ensure_installed = { "c", "cpp", "python", "lua" },
+  ensure_installed = { "c", "lua", "python", "cpp" },
 
   -- Install parsers synchronously (only applied to `ensure_installed`)
   sync_install = false,
@@ -159,6 +147,54 @@ require'nvim-treesitter.configs'.setup {
   }
 }
 
+require("catppuccin").setup({
+    flavour = "mocha", -- latte, frappe, macchiato, mocha
+    background = { -- :h background
+        light = "latte",
+        dark = "mocha",
+    },
+    transparent_background = false,
+    term_colors = true;
+    show_end_of_buffer = false, -- show the '~' characters after the end of buffers
+    term_colors = false,
+    dim_inactive = {
+        enabled = false,
+        shade = "dark",
+        percentage = 0.15,
+    },
+    no_italic = false, -- Force no italic
+    no_bold = false, -- Force no bold
+    styles = {
+        comments = { "italic" },
+        conditionals = { "italic" },
+        loops = {},
+        functions = {},
+        keywords = {},
+        strings = {},
+        variables = {},
+        numbers = {},
+        booleans = {},
+        properties = {},
+        types = {},
+        operators = {},
+    },
+    color_overrides = {
+				mocha = {
+					base = "#000000",
+					mantle = "#000000",
+					crust = "#000000",
+				},
+			},
+    custom_highlights = {},
+    integrations = {
+        cmp = true,
+        gitsigns = true,
+        nvimtree = true,
+        telescope = true,
+        notify = false,
+        mini = false,
+        -- For more plugins integrations please scroll down (https://github.com/catppuccin/nvim#integrations)
+    },
+})
 
-
-
+vim.cmd.colorscheme "catppuccin"
