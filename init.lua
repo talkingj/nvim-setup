@@ -49,6 +49,7 @@ vim.api.nvim_set_keymap('n', '<Space>z','Zg', { noremap = false, silent = true }
 --vim.api.nvim_set_keymap('n', '<Space>p',':bn<CR>', { noremap = true, silent = true });
 cmd("set nospell");
 
+
 local nvim_lsp = require('lspconfig')
 local on_attach = function(client, bufnr)
 
@@ -212,4 +213,4 @@ require("catppuccin").setup({
     },
 })
 
-vim.cmd.colorscheme "catppuccin"
+cmd("autocmd VimEnter * COQnow");
