@@ -27,8 +27,6 @@ require('packer').startup(function()
         run = ':TSUpdate'
     }
   use 'nvim-treesitter/playground'
-  use 'nvim-telescope/telescope.nvim'
-  use "nvim-lua/plenary.nvim"
   use { "catppuccin/nvim", as = "catppuccin" }
 end)
 
@@ -213,4 +211,5 @@ require("catppuccin").setup({
     },
 })
 
-cmd("autocmd VimEnter * COQnow");
+vim.cmd.colorscheme "catppuccin"
+cmd("autocmd VimEnter * COQnow")
