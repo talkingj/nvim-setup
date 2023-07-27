@@ -1,5 +1,3 @@
-
-
 require('packer').startup(function()
   -- Packer can manage itself
   use 'wbthomason/packer.nvim'
@@ -11,10 +9,12 @@ require('packer').startup(function()
   -- Optional
   use 'p00f/nvim-ts-rainbow'
   use 'neovim/nvim-lspconfig'
+  use 'edKotinsky/Arduino.nvim'
   use 'kamykn/spelunker.vim'
   use {
 	'ms-jpq/coq_nvim',
 	branch = 'coq'
+
   }
   use {
   'nvim-telescope/telescope.nvim', tag = '0.1.1',
@@ -245,3 +245,23 @@ require("nvim-tree").setup({
     dotfiles = true,
   },
 })
+
+require('arduino').setup {
+    default_fqbn = "arduino:avr:uno",
+
+    --Path to clangd (all paths must be full)
+    clangd = "/usr/bin/clangd",
+
+    --Path to arduino-cli
+    arduino = "/opt/homebrew/bin/arduino-cli",
+
+    --Data directory of arduino-cli
+    arduino_config_dir = "Users/james/Library/Arduino15",
+
+    --Extra options to arduino-language-server
+    extra_opts = { ... }
+}
+
+require 'lspconfig' ['arduino_language_server'].setup {
+    on_new_config = require('arduino').on_new_config,
+}
