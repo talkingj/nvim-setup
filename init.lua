@@ -11,6 +11,7 @@ require('packer').startup(function()
   use 'neovim/nvim-lspconfig'
   use 'edKotinsky/Arduino.nvim'
   use 'kamykn/spelunker.vim'
+  use 'sbdchd/neoformat'
   use {
 	'ms-jpq/coq_nvim',
 	branch = 'coq'
@@ -32,8 +33,14 @@ require('packer').startup(function()
   use { "catppuccin/nvim", as = "catppuccin" }
   use { "williamboman/mason.nvim",
         "williamboman/mason-lspconfig.nvim",
-        "neovim/nvim-lspconfig", 
-     }
+  }
+  use({
+    "jose-elias-alvarez/null-ls.nvim",
+    config = function()
+        require("null-ls").setup()
+    end,
+    requires = { "nvim-lua/plenary.nvim" },
+  })
 
   use {
   'nvim-tree/nvim-tree.lua',
@@ -226,6 +233,7 @@ require("catppuccin").setup({
 
 vim.cmd.colorscheme "catppuccin"
 cmd("autocmd VimEnter * COQnow")
+cmd("autocmd BufWritePre * lua vim.lsp.buf.format()")
 
 -- disable netrw at the very start of your init.lua
 vim.g.loaded_netrw = 1
@@ -302,3 +310,21 @@ local DEFAULT_SETTINGS = {
     ---@type table<string, fun(server_name: string)>?
     handlers = nil,
 }
+
+local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
+
+require("null-ls").setup({
+	on_attach = function(client, bufnr)
+		if client.supports_method("textDocument/formatting") then
+			vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
+			vim.api.nvim_create_autocmd("BufWritePre", {
+				group = augroup,
+				buffer = bufnr,
+				callback = function()
+					vim.lsp.buf.format()
+				end,
+			})
+		end
+	end,
+	sources = sources,
+})
