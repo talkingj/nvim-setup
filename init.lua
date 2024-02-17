@@ -12,10 +12,10 @@ require('packer').startup(function()
   use 'edKotinsky/Arduino.nvim'
   use 'kamykn/spelunker.vim'
   use 'sbdchd/neoformat'
+  use 'fpeterek/nvim-surfers'
   use {
 	'ms-jpq/coq_nvim',
 	branch = 'coq'
-
   }
   use {
   'nvim-telescope/telescope.nvim', tag = '0.1.1',
@@ -288,6 +288,10 @@ require("mason").setup({
 require 'arduino'.setup({
     clangd = require 'mason-core.path'.bin_prefix 'clangd',
     -- other settings
+})
+
+require('nvim-surfers').setup({
+  use_tmux = true
 })
 
 local DEFAULT_SETTINGS = {
