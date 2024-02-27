@@ -1,6 +1,9 @@
 require('packer').startup(function()
   -- Packer can manage itself
   use 'wbthomason/packer.nvim'
+  use { 'williamboman/mason.nvim',
+    run = ":MasonUpdate"
+  }
   use {
   'nvim-lualine/lualine.nvim',
   requires = { 'kyazdani42/nvim-web-devicons', opt = true }
@@ -9,7 +12,6 @@ require('packer').startup(function()
   -- Optional
   use 'p00f/nvim-ts-rainbow'
   use 'neovim/nvim-lspconfig'
-  use 'edKotinsky/Arduino.nvim'
   use 'kamykn/spelunker.vim'
   use 'sbdchd/neoformat'
   use 'fpeterek/nvim-surfers'
@@ -18,22 +20,31 @@ require('packer').startup(function()
 	branch = 'coq'
   }
   use {
-  'nvim-telescope/telescope.nvim', tag = '0.1.1',
-  requires = { {'nvim-lua/plenary.nvim'} }
+    'nvim-telescope/telescope.nvim', tag = '0.1.4',
+    requires = { {'nvim-lua/plenary.nvim'} }
   }
+  use 'nvim-tree/nvim-tree.lua'
   use {
 	'ms-jpq/coq.artifacts',
 	branch = 'artifacts'
   }
+  use 'nvim-tree/nvim-web-devicons'
   use {
         'nvim-treesitter/nvim-treesitter',
         run = ':TSUpdate'
     }
   use 'nvim-treesitter/playground'
   use { "catppuccin/nvim", as = "catppuccin" }
-  use { "williamboman/mason.nvim",
-        "williamboman/mason-lspconfig.nvim",
-  }
+  use {'nvim-telescope/telescope-fzf-native.nvim', run = 'make'}
+  use {
+    'goolord/alpha-nvim',
+    requires = {'nvim-tree/nvim-web-devicons'},
+    config = function ()
+      require'alpha'.setup(require'alpha.themes.startify'.config)
+    end
+}
+  use 'airblade/vim-gitgutter'
+
   use({
     "jose-elias-alvarez/null-ls.nvim",
     config = function()
@@ -42,12 +53,6 @@ require('packer').startup(function()
     requires = { "nvim-lua/plenary.nvim" },
   })
 
-  use {
-  'nvim-tree/nvim-tree.lua',
-  requires = {
-    'nvim-tree/nvim-web-devicons', -- optional
-  },
-}
 end)
 
 local g = vim.g
@@ -62,11 +67,11 @@ vim.o.tabstop = 2;
 vim.o.shiftwidth = 2;
 vim.wo.number = true;
 vim.wo.relativenumber = true;
-
 vim.api.nvim_set_keymap('n', '<Space>z','Zg', { noremap = false, silent = true });
---vim.api.nvim_set_keymap('n', '<Space>p',':bn<CR>', { noremap = true, silent = true });
-cmd("set nospell");
+vim.keymap.set("n", '<Space>/', '<cmd>Telescope current_buffer_fuzzy_find<CR>')
+vim.keymap.set("n", '<Space>?', '<cmd>Telescope live_grep<CR>')
 
+cmd("set nospell");
 
 local nvim_lsp = require('lspconfig')
 local on_attach = function(client, bufnr)
@@ -78,22 +83,6 @@ local on_attach = function(client, bufnr)
 
   -- Mappings
   local opts = { noremap=true, silent=true }
-  buf_set_keymap('n', 'gD', '<Cmd>lua vim.lsp.buf.declaration()<CR>', opts)
-  buf_set_keymap('n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
-  buf_set_keymap('n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
-  buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
-  buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
-  buf_set_keymap('n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
-  buf_set_keymap('n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
-  buf_set_keymap('n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
-  buf_set_keymap('n', '<space>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
-  buf_set_keymap('n', '<space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
-  buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
-  buf_set_keymap('n', '<space>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
-  buf_set_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
-  buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
-  buf_set_keymap('n', '<space>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
-  buf_set_keymap("n", "<Space>f", "<cmd>lua vim.lsp.buf.format({async = true})<CR>", opts)
   -- Set some keybinds conditional on server capabilities
 end
 
@@ -164,8 +153,6 @@ require'nvim-treesitter.configs'.setup {
     -- the name of the parser)
     -- list of language that will be disabled
     --disable = {  "rust" },
-
-    -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
     -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
     -- Using this option may slow down your editor, and you may see some duplicate highlights.
     -- Instead of true it can also be a list of languages
@@ -183,7 +170,7 @@ require'nvim-treesitter.configs'.setup {
 
 require("catppuccin").setup({
     flavour = "mocha", -- latte, frappe, macchiato, mocha
-    background = { -- :h background
+    background = { -- :h backgroundGGu
         light = "latte",
         dark = "mocha",
     },
@@ -242,9 +229,6 @@ vim.g.loaded_netrwPlugin = 1
 -- set termguicolors to enable highlight groups
 vim.opt.termguicolors = true
 
--- empty setup using defaults
-require("nvim-tree").setup()
-
 -- OR setup with some options
 require("nvim-tree").setup({
   sort_by = "case_sensitive",
@@ -259,36 +243,9 @@ require("nvim-tree").setup({
   },
 })
 
-require('arduino').setup {
-    default_fqbn = "arduino:avr:uno",
 
-    --Path to clangd (all paths must be full)
-    clangd = "/usr/bin/clangd",
+require("mason").setup()
 
-    --Path to arduino-cli
-    arduino = "/opt/homebrew/bin/arduino-cli",
-
-    --Data directory of arduino-cli
-    arduino_config_dir = "Users/james/Library/Arduino15",
-
-    --Extra options to arduino-language-server
-    extra_opts = { ... }
-}
-
-require("mason").setup({
-    ui = {
-        icons = {
-            package_installed = "✓",
-            package_pending = "➜",
-            package_uninstalled = "✗"
-        }
-    }
-})
-
-require 'arduino'.setup({
-    clangd = require 'mason-core.path'.bin_prefix 'clangd',
-    -- other settings
-})
 
 require('nvim-surfers').setup({
   use_tmux = true
