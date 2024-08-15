@@ -44,6 +44,8 @@ require('packer').startup(function()
     end
 }
   use 'airblade/vim-gitgutter'
+  
+  use 'lervag/vimtex'
 
   use({
     "jose-elias-alvarez/null-ls.nvim",
@@ -172,7 +174,7 @@ require("catppuccin").setup({
     flavour = "mocha", -- latte, frappe, macchiato, mocha
     background = { -- :h backgroundGGu
         light = "latte",
-        dark = "mocha",
+        dark = "latte",
     },
     transparent_background = false,
     term_colors = true;
@@ -245,6 +247,7 @@ require("nvim-tree").setup({
 
 
 require("mason").setup()
+require'lspconfig'.pyright.setup{}
 
 
 require('nvim-surfers').setup({
@@ -289,3 +292,7 @@ require("null-ls").setup({
 	end,
 	sources = sources,
 })
+
+-- vimtex stuff
+--
+vim.g.vimtex_view_method = 'mupdf'
